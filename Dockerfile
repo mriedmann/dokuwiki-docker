@@ -32,31 +32,36 @@ RUN apk add --no-cache \
 RUN cd /tmp/ && \
     wget https://download.dokuwiki.org/src/dokuwiki/dokuwiki-${DOKUWIKI_VERSION}.tgz && \
 	echo "$DOKUWIKI_MD5  dokuwiki-${DOKUWIKI_VERSION}.tgz" > MD5SUM && md5sum -c MD5SUM && \
-	mkdir -p /opt/dokuwiki && \
-	cd /opt/dokuwiki/ && \
+	mkdir -p /usr/src/dokuwiki && \
+	cd /usr/src/dokuwiki && \
     tar --strip-components=1 -vxzf /tmp/dokuwiki-${DOKUWIKI_VERSION}.tgz && \
     rm -Rf /tmp/dokuwiki* \
-	rm /opt/dokuwiki/install.php
+	rm /usr/src/dokuwiki/install.php
 
+COPY conf/* /usr/src/dokuwiki/conf/
+	
 COPY pool.conf /etc/php-fpm.d/pool.conf
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY supervisord.conf /etc/supervisord.conf	
-	
-WORKDIR /opt/dokuwiki
 
-COPY /conf/* /opt/dokuwiki/conf/
-
-RUN chown -R nginx:nginx /opt/dokuwiki && \
-	chown -R nginx:nginx /var/lib/nginx/ && \
+RUN chown -R nginx:nginx /var/lib/nginx/ && \
 	touch /var/run/supervisor.sock && \
 	chmod 777 /var/run/supervisor.sock && \
 	mkdir /run/nginx
 
+RUN mkdir -p /opt/dokuwiki/data && \
+    mkdir -p /opt/dokuwiki/lib/plugins && \
+	mkdir -p /opt/dokuwiki/conf && \
+	mkdir -p /opt/dokuwiki/lib/tpl
+	
 VOLUME ["/opt/dokuwiki/data/","/opt/dokuwiki/lib/plugins/","/opt/dokuwiki/conf/","/opt/dokuwiki/lib/tpl/"]
 
 EXPOSE 80
 
-CMD supervisord
+COPY entrypoint.sh /bin/entrypoint
+
+ENTRYPOINT ["entrypoint"]
+CMD ["supervisord"]
 
 
 
