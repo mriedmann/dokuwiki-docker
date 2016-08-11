@@ -36,7 +36,7 @@ RUN cd /tmp/ && \
 	mkdir -p /usr/src/dokuwiki && \
 	cd /usr/src/dokuwiki && \
     tar --strip-components=1 -vxzf /tmp/dokuwiki-${DOKUWIKI_VERSION}.tgz && \
-    rm -Rf /tmp/dokuwiki* \
+    rm -Rf /tmp/dokuwiki* && \
 	rm /usr/src/dokuwiki/install.php
 
 COPY conf/* /usr/src/dokuwiki/conf/
