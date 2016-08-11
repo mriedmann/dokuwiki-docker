@@ -23,6 +23,7 @@ RUN apk add --no-cache \
 	php5-ctype \
 	php5-dom \
     php5-fpm \
+	php5-zlib \
 	php5-openssl \
 	supervisor \
 	nginx \
