@@ -44,12 +44,14 @@ COPY pool.conf /etc/php-fpm.d/pool.conf
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY supervisord.conf /etc/supervisord.conf	
 
-RUN chown -R nginx:nginx /var/lib/nginx/ && \
+COPY entrypoint.sh /bin/entrypoint
+
+RUN chmod +x /bin/entrypoint && \
+	chown -R nginx:nginx /var/lib/nginx/ && \
 	touch /var/run/supervisor.sock && \
 	chmod 777 /var/run/supervisor.sock && \
-	mkdir /run/nginx
-
-RUN mkdir -p /opt/dokuwiki/data && \
+	mkdir /run/nginx && \
+	mkdir -p /opt/dokuwiki/data && \
     mkdir -p /opt/dokuwiki/lib/plugins && \
 	mkdir -p /opt/dokuwiki/conf && \
 	mkdir -p /opt/dokuwiki/lib/tpl
@@ -57,8 +59,6 @@ RUN mkdir -p /opt/dokuwiki/data && \
 VOLUME ["/opt/dokuwiki/data/","/opt/dokuwiki/lib/plugins/","/opt/dokuwiki/conf/","/opt/dokuwiki/lib/tpl/"]
 
 EXPOSE 80
-
-COPY entrypoint.sh /bin/entrypoint
 
 ENTRYPOINT ["entrypoint"]
 CMD ["supervisord"]
